@@ -1,0 +1,163 @@
+\section{Classification and Results}
+%\bigskip
+This section presents and compares the results of the classification methods to determine the optimal model. Before evaluating them, the impact of class imbalance is examined by comparing models for balanced and imbalanced dataset. Additionally, the performance of Holdout and k-fold Cross-Validation is assessed for both the Classification with the specific learner nodes, and the Classification employing a metaclassifier node. 
+To effectively handle multi-class datasets using native binary classifiers, the MultiClass Classifier node was employed~\cite{multiclasswiki}. It decomposes multi-class problems into multiple binary classification tasks, enabling a structured comparison between binary classification models and those adapted for multi-class scenarios.
+
+The performance was evaluated using multiple measures, including Accuracy, F1-Measure, Recall, Precision, and AUC. The analysis aimed to compare the effectiveness of various classifiers using different approaches.
+Furthermore, to facilitate a comprehensive analysis of model performance, the results obtained from different classification methods were combined, providing a clearer and more structured evaluation framework.
+
+\subsection{Comparison with Imbalanced Dataset}
+\subsubsection{Holdout}
+The holdout method is a widely used validation technique for assessing the performance of classification models by dividing the dataset into training and testing subsets. The dataset was partitioned using an 80\%-20\% split, where 80\% of the data was allocated for training and 20\% for testing.
+\subsubsection{k-folds Cross Validation}
+K-fold Cross-Validation is a robust technique for evaluating the performance of classification models by partitioning the dataset into multiple subsets, ensuring a more reliable assessment of generalization error. In this study, a 5-fold cross-validation procedure was implemented for every model, dividing the dataset into five equal subsets. Each subset was used once as a test set while the remaining four subsets were used for training, allowing every data point to contribute to both training and testing. This process provides a more stable estimate of model performance. The cross-validation procedure was carried out using the X-Partitioner node.
+\subsection{Comparison with Balanced Dataset}
+\subsubsection{Equal Size Sampling}
+As already mentioned, class imbalance is a critical issue in classification tasks, where an unequal distribution of class instances can lead to biased models that favour the majority class, thereby reducing the predictive performance for minority classes. Different techniques can be employed to correct class imbalance~\cite{imbalancedknime}, including downsampling the majority class, or oversampling the minority class through methods such as the \textit{Synthetic Minority Over-sampling Technique (SMOTE)}~\cite{imbalancedwiki}. For our case, \textit{Equal Size Sampling} was applied the node of the same name, which systematically removes instances from the dataset to ensure an equal distribution of classes within a nominal variable. By ensuring balanced class representation, classification models can achieve improved generalization error and more reliable performance across all categories.
+\subsubsection{Holdout}
+As before, the holdout method was also applied to the balanced dataset using an 80\%-20\% split. Balancing the dataset ensures that models do not favour the majority class, leading to a more representative evaluation of classification performance.
+\subsubsection{k-folds Cross Validation}
+The same considerations made in the corresponding section of the imbalanced case also apply here.
+\subsection{Feature Selection}% Implemented Classification on Balanced Dataset}
+Feature selection is a crucial step in classification, aiming to identify the most relevant variables while reducing redundancy and improving model efficiency. When applied to a balanced dataset, it ensures that the selected features are not biased towards the majority class, leading to more reliable predictions. 
+
+To enhance analysis, both Filter approaches and Wrapper method were implemented, allowing a clearer assessment of feature selection and classification performance.
+\subsubsection{Univariate Filter}
+Univariate Filter was performed using the \textit{AttributeSelectedClassifier} node in KNIME. Using this method, attributes are selected before learning the classifier through an objective function. The \texttt{Ranker} search method was applied, evaluating each feature individually based on statistical criteria, such as \textit{Information Gain Ratio}, which evaluates the worth of an attribute by measuring the information gain with respect to the class. This approach ranks attributes selecting the top five most relevant features for classification. Univariate filtering is computationally efficient and straightforward, making it effective for reducing dimensionality. However, it does not take into account for relationships between attributes, which may result in the selection of redundant variables.
+\subsubsection{Multivariate Filter}
+Multivariate Filter was conducted with the same node but with the \texttt{BestFirst} search method. Unlike univariate approaches, this one evaluates feature subsets rather than individual attributes, allowing for the identification of the most informative combinations. This method explores different subsets by considering interactions between features, ensuring that selected attributes contribute unique information to the model. Although more computationally intensive, multivariate filters typically lead to improved classification performance by reducing redundancy and capturing complex relationships within the data. In this study, this solution selects only two features, compared to the 5 features selected by the univariate filter, but with similar performance.
+\subsubsection{Wrapper}
+In this project, the Wrapper method was employed for feature selection using the same node used for the Filter method, although configured with the \texttt{WrapperSubsetEval} evaluator. Wrappers assess the usefulness of feature subsets by evaluating their impact on a specific classifier's performance, effectively tailoring the feature selection process to the model in use. In our case, the evaluator conducts a 5-fold Cross-Validation to estimate the accuracy of the learning scheme for a set of attributes. This involves partitioning the dataset into five subsets, sequentially using each subset for testing while training on the remaining data. 
+
+The wrapper method is significantly computationally intensive due to the iterative nature of the process. This approach is particularly advantageous when interactions between features significantly influence model performance. It is worth noting that kNN, MLP, and SMO models were excluded due to their high computational cost, which made the feature selection process using wrapper excessively time-consuming.
+\subsection{Results}
+The performance of the classification models was evaluated using multiple metrics, including Accuracy, F1-Measure, Recall, Precision, and Area Under the Curve (AUC). The analysis aimed to compare the effectiveness of various classifiers. 
+As already discussed, Accuracy is less robust and informative when applied to imbalanced datasets, because it may yield misleading results due to the disproportionate class distribution. For this reason, other measures (such as F1-measure, Recall, Precision) are preferred for the evaluation of the imbalanced configuration. 
+Therefore, the Accuracy and AUC values of the balanced dataset for the metaclassifier node are highlighted in this report. In fact, the tables below show the accuracy performance evaluation of the metaclassifier learner for the holdout and cross-validation methods. 
+\begin{table}[H]
+\centering
+\label{tab:without_cv}
+\begin{tabular}{|l|c|}
+\hline
+\textbf{Model} & \textbf{Accuracy} \\ \hline
+Random Forest & 0.964 \\ \hline
+Random Forest\_CV & 0.961 \\ \hline
+Multilayer Perceptron & 0.962 \\ \hline
+Multilayer Perceptron\_CV & 0.957 \\ \hline
+J48 & 0.960 \\ \hline
+J48\_CV & 0.956 \\ \hline
+Logistic Regression & 0.936 \\ \hline
+Logistic Regression\_CV & 0.934 \\ \hline
+Naïve Bayes& 0.884 \\ \hline
+Naïve Bayes\_CV & 0.886 \\ \hline
+SMO & 0.839 \\ \hline
+SMO\_CV & 0.839 \\ \hline
+\end{tabular}
+\caption{Model Accuracy for MultiClassClassifier node (with Holdout and CV=Cross-Validation)}
+\end{table}
+
+The analysis reveals that the top-performing models for both methodologies are consistent, with Random Forest, Multilayer Perceptron, and J48 showing nearly identical performance metrics. 
+
+The tables below present the AUC values achieved by each model, categorized by class value and methodology (holdout and CV). Notably, Random Forest demonstrates the highest AUC values across the evaluated conditions. 
+
+\begin{table}[H]
+\centering
+\resizebox{\linewidth}{!}{
+\begin{tabular}{|l|c|}
+\hline
+\textbf{Classifier} & \textbf{Area Under Curve} \\
+\hline
+\textbf{Random Forest (Star)\_CV} & \textbf{1} \\
+\textbf{Random Forest (Star)} & \textbf{1} \\
+SMO (Star)\_CV & 0.988 \\
+SMO (Star) & 0.99 \\
+Naïve Bayes (Star)\_CV & 0.998 \\
+Naïve Bayes (Star) & 0.998 \\
+Multilayer Perceptron (Star)\_CV & 0.998 \\
+Multilayer Perceptron (Star) & 0.999 \\
+Logistic Regression (Star)\_CV & 0.998 \\
+Logistic Regression (Star) & 0.999 \\
+J48 (Star)\_CV & 0.998 \\
+J48 (Star) & 0.999 \\
+\hline
+\end{tabular}
+}
+\caption{Area Under Curve for Star class (MultiClassClassifier node)}
+\label{tab:star_auc}
+\end{table}
+
+% CHECK:
+% I have fixed the output in theory @Selin @Fra
+% Now I'm not checking, but I think we haven't done
+% MLP at this step, I remember I left it only in Meta MultiClass
+
+
+\begin{table}[H]
+\centering
+\resizebox{\linewidth}{!}{ % Automatically resize to fit width
+\begin{tabular}{|l|c|}
+\hline
+\textbf{Classifier} & \textbf{Area Under Curve} \\
+\hline
+\textbf{Random Forest (Galaxy)\_CV} & \textbf{0.987} \\
+\textbf{Random Forest (Galaxy)} & \textbf{0.988} \\
+Multilayer Perceptron (Galaxy)\_CV & 0.981 \\
+Multilayer Perceptron (Galaxy) & 0.985 \\
+J48 (Galaxy)\_CV & 0.979 \\
+J48 (Galaxy) & 0.982 \\
+Logistic Regression (Galaxy)\_CV & 0.947 \\
+Logistic Regression (Galaxy) & 0.952 \\
+Naive Bayes (Galaxy)\_CV & 0.923 \\
+Naive Bayes (Galaxy) & 0.921 \\
+SMO (Galaxy)\_CV & 0.894 \\
+SMO (Galaxy) & 0.899 \\
+\hline
+\end{tabular}
+}
+\caption{Area Under Curve for Galaxy class (MultiClassClassifier node)}
+\label{tab:galaxy_auc}
+\end{table}
+
+\begin{table}[H]
+\centering
+\resizebox{\linewidth}{!}{
+\begin{tabular}{|l|c|}
+\hline
+\textbf{Classifier} & \textbf{Area Under Curve} \\
+\hline
+\textbf{Random Forest (Quasar)\_CV} & \textbf{0.986} \\
+\textbf{Random Forest (Quasar)} & \textbf{0.988} \\
+Multilayer Perceptron (Quasar)\_CV & 0.984 \\
+Multilayer Perceptron (Quasar) & 0.986 \\
+J48 (Quasar)\_CV & 0.985 \\
+J48 (Quasar) & 0.988 \\
+Logistic Regression (Quasar)\_CV & 0.981 \\
+Logistic Regression (Quasar) & 0.983 \\
+Naive Bayes (Quasar)\_CV & 0.96 \\
+Naive Bayes (Quasar) & 0.96 \\
+SMO (Quasar)\_CV & 0.957 \\
+SMO (Quasar) & 0.959 \\
+\hline
+\end{tabular}
+}
+\caption{Area Under Curve for Quasar class (MultiClassClassifier node)}
+\label{tab:quasar_auc}
+\end{table}
+
+Moreover, the table below shows the Accuracy values for the specific Learner nodes which perform also XGBoost and kNN, in addition to Random Forest and the other classifiers that have already been evaluated before. In this case, we observe a high accuracy for XGBoost, both for holdout and CV, comparable to the Random Forest. 
+\begin{table}[H]
+\centering
+\label{tab:other_classifiers_specific}
+\begin{tabular}{|l|c|}
+\hline
+\textbf{Model} & \textbf{Accuracy} \\ \hline
+\textbf{XGBoost} & \textbf{0.962} \\ \hline
+\textbf{XGBoost\_CV} & \textbf{0.961} \\ \hline
+\textbf{Random Forest} & \textbf{0.962} \\ \hline
+\textbf{Random Forest\_CV} & \textbf{0.959} \\ \hline
+kNN & 0.95 \\ \hline
+kNN\_CV & 0.945 \\ \hline
+\end{tabular}
+\caption{Model Accuracy for specific Learner nodes}
+\end{table}
+%\vspace{0.3cm}

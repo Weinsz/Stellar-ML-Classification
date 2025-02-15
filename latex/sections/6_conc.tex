@@ -1,0 +1,17 @@
+\section{Conclusions}
+%\bigskip
+%After implementing preprocessing and visualization strategies before carefully analyzing our data,
+
+The objective of this project consisted in determining one or more multiclass classification models that allow to accurately predict the category of astronomical objects. 
+It emerged that the important aspects are the redshift and the photometric filters. From these initial discoveries, we then performed the effective classification task and compared the results using different methods, like comparing imbalanced and balanced datasets, techniques such as k-folds Cross-Validation and hold-out. Finally, we also applied filter and wrapper approaches for feature selection process in order to retain the most crucial attributes and reduce noise and computational load.
+
+Then, we evaluated the performance of the following models with hold-out and k-fold Cross-Validation: XGBoost, Random Forest, kNN, J48 (Decision Tree), Logistic Regression, Naive Bayes, Multi-Layer Perceptron, SMO (Support Vector Machine). Analyzing all these classifiers for multiclass classification task, XGBoost and Random Forest turned out to be the optimal solution for specific learners approach, while Random Forest emerged to be the best one also for metaclassifier.\\
+To be more precise, both XGBoost and Random Forest achieve approximately an accuracy of 96\%.
+%Generally, the classification models involved are among the ones typically suited for multiclass classification problems, although Support Vector Machine and Logistic Regression do not support multi-class classification by default.
+Regarding the class imbalance problem, Equal Size Sampling was discovered to be the best approach, considering performances and computational time, also avoiding favouring the majority class, as it would happen with class imbalance.
+
+Finally, feature selection played a pivotal role in enhancing classification performance by identifying the most relevant variables among the 15 columns available - removing earlier \texttt{obj\_id} and \texttt{run\_id} from the original 17 - while also reducing redundancy. Both Filter and Wrapper approaches were implemented, each offering distinct advantages. The Univariate Filter, utilizing the Ranker method and Information Gain Ratio, efficiently selected 5 features, but this method doesn't take into account inter-attribute relationships. In contrast, the Multivariate Filter with CFS and BestFirst search method identified only 2 features while maintaining similar performance, demonstrating the benefits of evaluating feature subsets for capturing complex relationships. Then, the Wrapper method, though computationally intensive, provided tailored feature selection through 5-fold Cross-Validation. Despite its potential for higher F-measure and accuracy, models such as kNN, XGBoost, MLP, and SMO were excluded due to excessive computational demands. It emerged that with this method, J48 and Random Forest achieve the highest values for F-measure and accuracy, respectively selecting 4 and 6 features. However, we have to keep in mind of the trade-off between performance and computational efficiency for feature selection strategies.
+
+From this study, it is clear that the chosen stellar dataset is natively effective and optimized for the classification of stars, galaxies and quasars. Therefore, it allows getting high performance and clear understanding without requiring additional features and overall pre-processing. 
+
+%\vspace{0.4cm}
